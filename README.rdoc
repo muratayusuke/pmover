@@ -1,28 +1,17 @@
-== README
+= Database setup
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+create user
 
-Things you may want to cover:
+    createuser -P -d pmover
 
-* Ruby version
+check user
 
-* System dependencies
+    SELECT usename from pg_user;
 
-* Configuration
+create databases
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+    createdb -h localhost -U pmover -E UTF8 pmover_dev
+    createdb -h localhost -U pmover -E UTF8 pmover_test
+    createdb -h localhost -U pmover -E UTF8 pmover_prod
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
