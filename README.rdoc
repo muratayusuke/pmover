@@ -15,3 +15,6 @@ create databases
     createdb -h localhost -U pmover -E UTF8 pmover_prod
 
 
+= environment values
+
+PMOVER_DATABASE_PASSWORD: database password
