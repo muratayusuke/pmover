@@ -41,5 +41,6 @@ gem 'spring',        group: :development
 group :development do
   gem 'rubocop'
   gem 'rspec'
+  gem "rspec-rails"
   gem 'turnip'
 end
