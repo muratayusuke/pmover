@@ -1,0 +1,2 @@
+module Bc::AuthHelper
+end

@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  namespace :bc do
+  get 'auth/login'
+  end
+
+  namespace :bc do
+  get 'auth/return'
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
