@@ -23,7 +23,7 @@ default: &default
   host: localhost
   port: 5432
   username: pmover
-  password: <%= ENV['PMOVER_DATABASE_PASSWORD'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
 
 development:
   <<: *default
