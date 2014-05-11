@@ -1,0 +1,20 @@
+MethodLength:
+  CountComments: false  # count full line comments?
+  Max: 100
+
+ClassLength:
+  CountComments: false  # count full line comments?
+  Max: 400
+
+CyclomaticComplexity:
+  Max: 11
+
+# Favor modifier if/unless usage when you have a single-line body.
+IfUnlessModifier:
+  Enabled: false
+
+RescueException:
+  Enabled: false
+
+LineEndConcatenation:
+  Enabled: false
