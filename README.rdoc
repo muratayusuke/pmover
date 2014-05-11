@@ -17,4 +17,6 @@ create databases
 
 = environment values
 
-PMOVER_DATABASE_PASSWORD: database password
+DB_PASSWORD: database password
+BC_CLIENT_ID: clientid for bitcasa API
+BC_CLIENT_SECRET: client secret for bitcasa API
