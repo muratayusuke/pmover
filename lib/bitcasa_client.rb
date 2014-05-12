@@ -3,7 +3,8 @@ require 'net/http'
 require 'timeout'
 require 'json'
 
-class BitcasaException < StandardError; end
+class BCException < StandardError; end
+class BCTimeoutException < StandardError; end
 
 # = This is Bitcasa Client library.
 class BitcasaClient
@@ -48,11 +49,13 @@ class BitcasaClient
 
     bc_url('/oauth2/authorize', param)
   rescue => e
-    raise BitcasaException, e.to_s, e.backtrace
+    raise BCException, e.to_s, e.backtrace
   end
 
   # == get oauth token
   # +code+: auth code which is given from oauth2/authorize request
+  # +return+: access_token
+  # If erros have occured, this method raise BCException
   def token(code)
     param = {
       secret: secret,
@@ -62,6 +65,15 @@ class BitcasaClient
     }
 
     res = send_request('/oauth2/token', param)
+    if res[:error]
+      fail BCException, res[:error]
+    end
+
+    unless res[:access_token]
+      fail BCException, "no access_token: #{res.inspect}"
+    end
+
+    res[:access_token]
   end
 
   private
@@ -101,15 +113,15 @@ class BitcasaClient
     end
 
     unless Net::HTTPOK === res
-      fail BitcasaException, "invalide API status code: #{res.code}"
+      fail BCException, "invalide API status code: #{res.code}"
     end
 
-    JSON.parse(res.body)
-  rescue BitcasaException
+    JSON.parse(res.body).symbolize_keys
+  rescue BCException
     raise
   rescue Timeout::Error => e
-    raise BitcasaException, 'API request timeout', e.backtrace
+    raise BCTimeoutException, 'API request timeout', e.backtrace
   rescue StandardError => e
-    raise BitcasaException, e.to_s, e.backtrace
+    raise BCException, e.to_s, e.backtrace
   end
 end
