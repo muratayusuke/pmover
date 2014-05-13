@@ -1,4 +1,4 @@
 # provider information
 class Provider
-  BITCASA = :bitcasa
+  BITCASA = :bc
 end

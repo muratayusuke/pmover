@@ -13,9 +13,17 @@ class Bc::AuthController < ApplicationController
       @error_msg = 'invalid request'
       return render template: 'bc/auth/return_error'
     end
-    access_token = bitcasa_client.token(params[:code])
-    # @user = User.create(Provider.BITCASA.to_s, )
-    logger.debug("token:#{access_token}")
+    bc = bitcasa_client
+    bc.token(params[:code])
+    profile = bc.user_profile
+
+    logger.debug(profile.inspect)
+
+    user = User.find_or_create_by(provider: Provider::BITCASA, uid: profile[:id])
+    user.token = bc.access_token
+    user.name = profile[:display_name]
+    user.save!
+    session[:user] = user
   rescue BCTimeoutException => e
     logger.error "error: #{e}"
     @error_msg = 'Bitcasa API request timeout'

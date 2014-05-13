@@ -15,9 +15,11 @@ class BitcasaClient
   BASE_URL = 'https://developer.api.bitcasa.com/v1'
   DEFAULT_REQUEST_TIMEOUT = 3
 
-  # == initialize function
-  # +id+: client_id for Bitcasa API
-  # +secret: client secret for Bitcasa API
+  # initialize function
+  # +id+:: client_id for Bitcasa API
+  # +secret+:: client secret for Bitcasa API
+  # +redirect_url+:: redirect_url after authentication
+  # +access_token+:: access_token for Bitcasa API (optional)
   def initialize(id, secret, redirect_url, access_token = nil)
     self.id = id
     self.secret = secret
@@ -26,7 +28,7 @@ class BitcasaClient
     self.request_timeout = DEFAULT_REQUEST_TIMEOUT
   end
 
-  # == set proxy information
+  # set proxy information
   def proxy(proxy_host, proxy_port, proxy_user, proxy_pwd)
     self.proxy_host = proxy_host
     self.proxy_port = proxy_port
@@ -34,8 +36,9 @@ class BitcasaClient
     self.proxy_pwd = proxy_pwd
   end
 
-  # == get oauth2 authorize URL
-  # +state+: state value for Bitcasa API
+  # get oauth2 authorize page URL
+  # +state+:: state value for Bitcasa API
+  # +return+:: oauth2 authorize page URL
   def authorize_url(state = nil)
     param = {
       client_id: id,
@@ -52,10 +55,15 @@ class BitcasaClient
     raise BCException, e.to_s, e.backtrace
   end
 
-  # == get oauth token
-  # +code+: auth code which is given from oauth2/authorize request
-  # +return+: access_token
-  # If erros have occured, this method raise BCException
+  # get oauth token
+  # +code+:: auth code which is given from oauth2/authorize request
+  # +return+:: access_token
+  #
+  # If get access_token request is succeeded, self.access_token is set
+  # as API result access_token.
+  #
+  # If erros have occured, this method raise BCException.
+  # If Bitcasa API request timeout, this method raise BCTimeoutException.
   def token(code)
     param = {
       secret: secret,
@@ -65,28 +73,51 @@ class BitcasaClient
     }
 
     res = send_request('/oauth2/token', param)
-    if res[:error]
-      fail BCException, res[:error]
-    end
 
     unless res[:access_token]
       fail BCException, "no access_token: #{res.inspect}"
     end
 
-    res[:access_token]
+    self.access_token = res[:access_token]
+    access_token
+  end
+
+  # get user profile
+  # +return+:: user profile hash
+  #            hash includes following information
+  #            \profile[:id]:: user id
+  #            \profile[:display_name]:: display name
+  #            \profile[:referral_link]:: referral link
+  #            \profile[:storage][:total]:: total storage size
+  #            \profile[:storage][:display]:: drive information string
+  #            \profile[:storage][:used]:: used size
+  #
+  # If erros have occured, this method raise BCException.
+  # If Bitcasa API request timeout, this method raise BCTimeoutException.
+  def user_profile
+    unless access_token
+      fail BCException, 'no access_token'
+    end
+
+    param = {
+      access_token: access_token
+    }
+
+    res = send_request('/user/profile', param)
+    res[:result]
   end
 
   private
 
-  # == convert hash to URL query string
-  # +h+: hash to convert query parameter
-  # +return+: string converted from parameter hash
+  # convert hash to URL query string
+  # +h+:: hash to convert query parameter
+  # +return+:: string converted from parameter hash
   def query(h)
     h.map { |k, v| "#{URI.encode(k.to_s)}=#{URI.encode(v.to_s)}" }.join('&')
   end
 
-  # == get Bitcasa API URL
-  # +return+: Bitcasa API URL based on path and param
+  # get Bitcasa API URL
+  # +return+:: Bitcasa API URL based on path and param
   def bc_url(path, param)
     "#{BASE_URL}#{path}?#{query(param)}"
   end
@@ -116,7 +147,12 @@ class BitcasaClient
       fail BCException, "invalide API status code: #{res.code}"
     end
 
-    JSON.parse(res.body).symbolize_keys
+    obj_str = JSON.parse(res.body).deep_symbolize_keys
+    if obj_str[:error]
+      fail BCException, "code: #{obj_str[:error][:code]}, message: #{obj_str[:error][:message]}"
+    end
+
+    obj_str
   rescue BCException
     raise
   rescue Timeout::Error => e
