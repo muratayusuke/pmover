@@ -2,12 +2,13 @@ require 'bitcasa_client'
 
 class Bc::AuthController < ApplicationController
   def login
-    unless session[:user]
-      redirect_to bitcasa_client.authorize_url
-    end
+    reset_session
+    redirect_to bitcasa_client.authorize_url
   end
 
   def return
+    reset_session
+
     unless params[:code]
       logger.info 'no code'
       @error_msg = 'invalid request'
