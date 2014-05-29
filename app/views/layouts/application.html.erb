@@ -7,6 +7,13 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <div class="header">
+    <%- if @user -%>
+      <%= @user.name %>
+    <%- else -%>
+      <%= link_to 'login', controller: 'bc/auth', action: :login %>
+    <%- end -%>
+  </div>
 
 <%= yield %>
 
