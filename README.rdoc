@@ -18,9 +18,6 @@ create databases
 = environment values
 
 DB_PASSWORD: database password
-BC_CLIENT_ID: clientid for bitcasa API
-BC_CLIENT_SECRET: client secret for bitcasa API
 
-= TODO
-
-BitcasaClient fix error handling
+DBX_APP_KEY: drop box app key
+DBX_APP_SECRET: drop box app secret
