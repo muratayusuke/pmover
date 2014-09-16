@@ -1,12 +1,9 @@
 Rails.application.routes.draw do
   get 'folder/list'
 
-  namespace :bc do
-  get 'auth/login'
-  end
-
-  namespace :bc do
-  get 'auth/return'
+  namespace :dbx do
+    get 'auth/login'
+    get 'auth/finish'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
