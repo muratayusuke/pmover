@@ -12,8 +12,9 @@ module Dbx
       access_token, user_id, _url_state = oauth2flow.finish(params)
       user = User.find_or_create_by(provider: Provider::DROPBOX,
                                     uid: user_id)
+      user.token = access_token
+      user.save!
 
-      logger.debug "token:#{access_token}"
       reset_session
       session[:access_token] = access_token
       session[:user_id] = user.id
