@@ -12,7 +12,9 @@ module Dbx
       access_token, user_id, _url_state = oauth2flow.finish(params)
       user = User.find_or_create_by(provider: Provider::DROPBOX,
                                     uid: user_id)
+      account_info = DropboxClient.new(access_token).account_info
       user.token = access_token
+      user.name = account_info['display_name']
       user.save!
 
       reset_session
