@@ -1,0 +1,17 @@
+
+<% if @user -%>
+  <%= form_for(@user, :url => user_update_path, :method => :post ) do |f| %>
+    <table>
+      <tr>
+        <td>provider</td><td><%= @user.provider %></td>
+      </tr>
+      <tr>
+        <td>name</td><td><%= @user.name %></td>
+      </tr>
+      <tr>
+        <td>email</td><td><%= f.text_field :email %></td>
+      </tr>
+    </table>
+    <%= f.submit "submit" %>
+  <% end -%>
+<% end -%>

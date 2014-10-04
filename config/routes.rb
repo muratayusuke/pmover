@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'user/view'
+  post 'user/update'
+
   get 'folder/list'
 
   namespace :dbx do

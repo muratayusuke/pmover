@@ -11,7 +11,7 @@
     <%- if @user -%>
       <%= @user.name %>
     <%- else -%>
-      <%= link_to 'login', controller: 'bc/auth', action: :login %>
+      <%= link_to 'login', controller: 'dbx/auth', action: :login %>
     <%- end -%>
   </div>
 
